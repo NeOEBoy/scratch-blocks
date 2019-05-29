@@ -53,6 +53,8 @@ CLOSURE_ROOT_NPM = os.path.join("node_modules")
 CLOSURE_LIBRARY_NPM = "google-closure-library"
 CLOSURE_COMPILER_NPM = "google-closure-compiler"
 
+NODE_COMPILER = "node"
+
 def import_path(fullpath):
   """Import a file with full path specification.
   Allows one to import from any directory, something __import__ does not do.
@@ -328,7 +330,9 @@ class Gen_compressed(threading.Thread):
       for group in [["google-closure-compiler"], dash_args]:
         args.extend(filter(lambda item: item, group))
 
-      proc = subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+      node_args = [NODE_COMPILER, "closure-compiler-4py.js"]
+      proc = subprocess.Popen(node_args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
+      proc.stdin.write(' '.join(args))
       (stdout, stderr) = proc.communicate()
 
       # Build the JSON response.
@@ -570,10 +574,12 @@ if __name__ == "__main__":
         closure_root, closure_library, "closure", "bin", "calcdeps.py"))
 
     # Sanity check the local compiler
+    test_node_args = [NODE_COMPILER, "closure-compiler-4py.js"]
+    test_proc = subprocess.Popen(test_node_args, stdin=subprocess.PIPE, stdout=subprocess.PIPE, shell=True)
     test_args = [closure_compiler, os.path.join("build", "test_input.js")]
-    test_proc = subprocess.Popen(test_args, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    test_proc.stdin.write(' '.join(test_args))
     (stdout, _) = test_proc.communicate()
-    assert stdout == read(os.path.join("build", "test_expect.js"))
+    assert stdout.strip() == read(os.path.join("build", "test_expect.js")).strip()
 
     print("Using local compiler: google-closure-compiler ...\n")
   except (ImportError, AssertionError):

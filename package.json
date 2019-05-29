@@ -7,13 +7,14 @@
   "homepage": "https://github.com/LLK/scratch-blocks#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/LLK/scratch-blocks.git"
+    "url": "https://github.com/LLK/scratch-blocks.git",
+    "sha": "$(git log -n1 --pretty=format:%H)"
   },
   "main": "./dist/vertical.js",
   "browser": "./shim/vertical.js",
   "scripts": {
     "deploy": "rimraf gh-pages/closure-library/scripts/ci/CloseAdobeDialog.exe && gh-pages -t -d gh-pages -m \"Build for $(git log --pretty=format:%H -n1)\"",
-    "prepublish": "python build.py && webpack",
+    "build": "npm run translate:from:local && python build.py && webpack --progress --colors --bail",
     "test:setup": "tests/scripts/test_setup.sh",
     "test:unit": "node tests/jsunit/test_runner.js",
     "test:lint": "eslint .",
@@ -21,6 +22,7 @@
     "test": "npm run test:lint && npm run test:messages && npm run test:setup && npm run test:unit",
     "version": "json -f package.json -I -e \"this.repository.sha = '$(git log -n1 --pretty=format:%H)'\"",
     "translate": "node i18n/js_to_json.js && node i18n/json_to_js.js",
+    "translate:from:local": "node i18n/sync_tx_translations_from_local.js",
     "translate:sync:src": "tx-push-src scratch-editor blocks msg/json/en.json",
     "translate:sync:translations": "node i18n/sync_tx_translations.js",
     "translate:update": "npm run translate:sync:src && npm run translate:sync:translations"
@@ -36,12 +38,11 @@
     "event-stream": "3.3.4",
     "gh-pages": "0.12.0",
     "glob": "7.1.2",
-    "google-closure-compiler": "20180402.0.0",
-    "google-closure-library": "20180204.0.0",
+    "google-closure-compiler": "20190513.0.0",
+    "google-closure-library": "20190513.0.0",
     "graceful-fs": "4.1.11",
     "json": "9.0.4",
     "rimraf": "2.6.2",
-    "scratch-l10n": "^3.3.20190513203303",
     "transifex": "1.5.0",
     "travis-after-all": "1.4.4",
     "uglifyjs-webpack-plugin": "^1.2.5",
