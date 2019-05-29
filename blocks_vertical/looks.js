@@ -399,7 +399,7 @@ Blockly.Blocks['looks_nextcostume'] = {
    */
   init: function() {
     this.jsonInit({
-      "message0": Blockly.Msg.LOOKS_NEXTCOSTUME,
+      "message0": Blockly.Msg.LOOKS_NEXTCOSTUME_BLOCK,
       "category": Blockly.Categories.looks,
       "extensions": ["colours_looks", "shape_statement"]
     });
